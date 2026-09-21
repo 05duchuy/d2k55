@@ -1,0 +1,425 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+}
+
+body {
+    display: flex;
+    min-height: 100vh;
+    background-color: #f4f6f9;
+    color: #333;
+}
+
+.sidebar {
+    width: 260px;
+    background-color: #1e293b;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    padding: 20px 0;
+    flex-shrink: 0;
+    transition: all 0.3s ease;
+}
+
+.sidebar .logo {
+    padding: 0 20px 15px; /* Giảm padding dưới một chút */
+    border-bottom: none; /* Xóa đường kẻ dưới logo đi */
+    margin-bottom: 0;
+    text-align: center;
+}
+
+.sidebar .logo h2 {
+    color: #38bdf8;
+    font-size: 24px;
+}
+
+.sidebar .logo p {
+    font-size: 13px;
+    color: #94a3b8;
+}
+
+.menu {
+    display: flex;
+    flex-direction: column;
+}
+
+.menu a {
+    display: block;
+    padding: 15px 25px;
+    color: #cbd5e1;
+    text-decoration: none;
+    transition: 0.3s;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.menu a:hover, .menu a.active {
+    background-color: #334155;
+    color: white;
+    border-left: 4px solid #38bdf8;
+}
+
+.main-content {
+    flex: 1;
+    padding: 30px 40px;
+    overflow-y: auto;
+    width: 100%;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.header h1 {
+    font-size: 26px;
+    color: #0f172a;
+}
+
+.header .subtitle {
+    color: #64748b;
+    margin-top: 5px;
+    font-weight: 500;
+}
+
+.user-info {
+    background-color: white;
+    padding: 10px 20px;
+    border-radius: 20px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.card {
+    background-color: white;
+    border-radius: 10px;
+    padding: 25px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+}
+
+.section-title {
+    font-size: 20px;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #e2e8f0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.text-green { color: #16a34a; }
+.text-red { color: #dc2626; }
+
+.table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 750px;
+}
+
+.data-table th, .data-table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #e2e8f0;
+    vertical-align: middle;
+}
+
+.data-table th {
+    background-color: #f8fafc;
+    font-weight: 600;
+    color: #475569;
+    white-space: nowrap;
+}
+
+.data-table tbody tr:hover { background-color: #f1f5f9; }
+.row-locked { background-color: #f8fafc; }
+.row-locked td { color: #64748b; }
+
+.table-bonus th { background-color: #dcfce7; color: #166534; }
+.table-penalty th { background-color: #fee2e2; color: #991b1b; }
+
+.badge {
+    padding: 5px 10px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 14px;
+    display: inline-block;
+}
+.points-normal { background-color: #e0f2fe; color: #0284c7; }
+.points-high { background-color: #dcfce7; color: #16a34a; }
+.badge-locked { background-color: #f1f5f9; color: #64748b; border: 1px solid #cbd5e1; }
+.group-badge { background-color: #f3f4f6; color: #4b5563; border: 1px solid #d1d5db; border-radius: 6px; padding: 2px 8px; font-size: 12px; }
+
+.action-group {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.btn {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: 0.2s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    font-size: 14px;
+}
+
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn-add { background-color: #10b981; color: white; }
+.btn-add:hover:not(:disabled) { background-color: #059669; }
+.btn-minus { background-color: #ef4444; color: white; }
+.btn-minus:hover:not(:disabled) { background-color: #dc2626; }
+.btn-primary { background-color: #38bdf8; color: white; }
+.btn-primary:hover:not(:disabled) { background-color: #0284c7; }
+.btn-warning { background-color: #f59e0b; color: white; }
+.btn-warning:hover:not(:disabled) { background-color: #d97706; }
+.btn-dark { background-color: #475569; color: white; }
+.btn-dark:hover:not(:disabled) { background-color: #334155; }
+.btn-outline { background-color: transparent; border: 1px solid #cbd5e1; color: #475569; }
+.btn-outline:hover:not(:disabled) { background-color: #f1f5f9; }
+
+.controls-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 15px;
+    border-bottom: 2px solid #e2e8f0;
+    padding-bottom: 15px;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.controls-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.week-tabs {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    flex: 1;
+}
+
+.tab-btn {
+    padding: 8px 16px;
+    background-color: #f8fafc;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    color: #475569;
+    transition: 0.2s;
+    white-space: nowrap;
+}
+.tab-btn:hover { background-color: #e2e8f0; }
+.tab-btn.active { background-color: #38bdf8; color: white; border-color: #38bdf8; }
+
+.toggle-status-btn {
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-weight: 600;
+    border: 1px solid;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: 0.2s;
+    white-space: nowrap;
+}
+.toggle-status-btn.unlocked { background-color: #fff; border-color: #e2e8f0; color: #475569; }
+.toggle-status-btn.locked { background-color: #fee2e2; border-color: #fca5a5; color: #991b1b; }
+
+.toggle-status-btn.included { background-color: #f0fdf4; border-color: #bbf7d0; color: #166534; }
+.toggle-status-btn.excluded { background-color: #f1f5f9; border-color: #cbd5e1; color: #64748b; text-decoration: line-through;}
+
+.form-control, .select-control {
+    padding: 10px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    font-size: 14px;
+}
+.form-control { width: 100%; }
+
+.toolbar { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; align-items: center; justify-content: space-between; }
+.add-member-container { display: flex; gap: 10px; flex: 1; min-width: 300px; }
+.sort-container { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 500; }
+
+.modal {
+    display: none; 
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background-color: rgba(15, 23, 42, 0.6);
+    z-index: 1000; align-items: center; justify-content: center;
+}
+.modal.show { display: flex; }
+.modal-content {
+    background-color: white; padding: 25px; border-radius: 12px;
+    width: 480px; max-width: 95%; box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    animation: fadeIn 0.2s ease-out;
+}
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid #e2e8f0; }
+.modal-header h3 { font-size: 18px; color: #0f172a; }
+.close-btn { font-size: 24px; cursor: pointer; color: #64748b; font-weight: bold; line-height: 1; }
+.close-btn:hover { color: #dc2626; }
+.modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 25px; }
+
+.guide-content h3 { margin-top: 20px; margin-bottom: 10px; color: #0f172a; }
+.guide-content p, .guide-content li { margin-bottom: 8px; color: #334155; line-height: 1.6; }
+.guide-content ul { padding-left: 20px; margin-bottom: 15px; }
+
+.hidden { display: none !important; }
+
+@media (max-width: 768px) {
+    body { flex-direction: column; }
+    
+    /* 1. Biến thanh sidebar thành App Header cố định ở trên cùng */
+    .sidebar { 
+        width: 100%; 
+        padding: 6px 15px 0 15px; 
+        display: grid;
+        grid-template-columns: 1fr auto;
+        grid-template-areas: 
+            "logo contact"
+            "menu menu";
+        align-items: center;
+        border-bottom: none;
+        position: sticky; /* Ghim cố định khi cuộn */
+        top: 0;
+        z-index: 100;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15); /* Thêm bóng đổ tạo chiều sâu */
+    }
+
+    /* 2. Phần Logo nằm góc trái */
+    .sidebar .logo { 
+        grid-area: logo;
+        margin-bottom: 0; 
+        padding: 0; 
+        border-bottom: none; 
+        text-align: left;
+    }
+    .sidebar .logo h2 { font-size: 20px; }
+    .sidebar .logo p { font-size: 12px; }
+
+    /* 3. Phần Menu vuốt ngang (như tab bar của app) */
+    .menu { 
+        grid-area: menu;
+        flex-direction: row; 
+        width: calc(100% + 30px); /* Bù lại padding của sidebar để tràn viền */
+        margin-left: -15px;
+        margin-top: 0px;
+        overflow-x: auto; 
+        gap: 0; 
+        padding: 0; 
+        border-top: 1px solid #334155;
+        background-color: #162032; /* Nền tối hơn một chút để phân biệt */
+    }
+    .menu::-webkit-scrollbar { display: none; }
+    .menu a { 
+        padding: 12px 15px; 
+        border-left: none; 
+        border-bottom: 3px solid transparent; 
+        font-size: 14px; 
+        white-space: nowrap;
+        text-align: center;
+        flex: 1; /* Căn đều các tab */
+    }
+    .menu a:hover, .menu a.active { 
+        background-color: transparent; /* Bỏ màu nền để làm nổi bật border bottom */
+        color: #38bdf8;
+        border-left: none; 
+        border-bottom: 3px solid #38bdf8; 
+    }
+    .sidebar-contact {
+        grid-area: contact;
+        padding: 0; 
+        margin: 0; 
+        border-bottom: none !important; /* Thêm !important để ghi đè border của desktop */
+        display: flex;
+        justify-content: flex-end; /* Căn nút sát sang mép phải */
+        align-items: center; /* Thêm dòng này để căn giữa nút theo chiều dọc */
+    }
+    
+    .fb-contact-btn {
+        padding: 10px; 
+        gap: 0; 
+        border-radius: 50%; /* Bo tròn hẳn thành icon app */
+        width: 42px;
+        height: 42px;
+    }
+    .fb-contact-btn span {
+        display: none; /* Ẩn chữ trên mobile */
+    }
+
+    /* 5. Tinh chỉnh các thành phần khác cho mobile */
+    .main-content { padding: 15px; }
+    .header h1 { font-size: 20px; }
+    .toolbar, .add-member-container { flex-direction: column; align-items: stretch; }
+    .controls-actions { flex-direction: column; align-items: stretch; width: 100%; }
+    .toggle-status-btn { justify-content: center; }
+}
+
+/* Nút liên hệ Facebook mang phong cách hiện đại */
+.fb-contact-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: linear-gradient(135deg, #1877F2, #145DBF); /* Màu gradient xanh Facebook */
+    color: #ffffff !important;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 12px 15px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.fb-contact-btn svg {
+    flex-shrink: 0;
+}
+
+/* Hiệu ứng khi di chuột (Hover) */
+.fb-contact-btn:hover {
+    transform: translateY(-2px); /* Nhấc nút lên nhẹ */
+    box-shadow: 0 6px 15px rgba(24, 119, 242, 0.4); /* Tăng độ tỏa của bóng */
+    background: linear-gradient(135deg, #1A81FF, #1565C0); /* Đổi màu sáng hơn một chút */
+}
+
+/* Hiệu ứng khi click (Active) */
+.fb-contact-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+.sidebar-contact {
+    padding: 0 20px 20px 20px;
+    border-bottom: 1px solid #334155; /* Đưa đường kẻ phân cách xuống dưới nút Facebook */
+    margin-bottom: 10px;
+}

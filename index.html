@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản Lý Thi Đua - Lớp 10D2</title>
+    <link rel="icon" type="image/png" href="logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div class="logo">
+            <h2>LỚP 10D2</h2>
+            <p>Hệ thống quản lý</p>
+        </div>
+        <div class="sidebar-contact">
+            <a href="https://facebook.com/auth.duchuyduong" target="_blank" class="fb-contact-btn">
+                <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                <span>Liên hệ Admin (FB)</span>
+            </a>
+        </div>
+        <nav class="menu">
+            <a id="nav-manage" class="active" onclick="switchMainTab('manage')">Quản lý</a>
+            <a id="nav-rules" onclick="switchMainTab('rules')">Bảng nội quy</a>
+            <a id="nav-guide" onclick="switchMainTab('guide')">Hướng dẫn</a>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <header class="header">
+            <div>
+                <h1>HỆ THỐNG THI ĐUA - LỚP 10D2</h1>
+                <p class="subtitle">Mỗi học sinh có điểm khởi điểm là 100 điểm/tuần</p>
+            </div>
+            <div class="user-info">
+                <button class="btn btn-primary" id="login-btn" onclick="openLoginModal()">👤 Đăng nhập</button>
+            </div>
+        </header>
+
+        <div id="tab-manage">
+            <section class="card">
+                <h2 class="section-title">Quản lý điểm thành viên</h2>
+                
+                <div class="controls-container">
+                    <div class="week-tabs" id="week-tabs-container"></div>
+                    
+                    <div class="controls-actions">
+                        <button id="btn-exclude-avg" class="toggle-status-btn included" onclick="toggleExcludeAverage()">
+                            📊 Đang tính TB
+                        </button>
+                        <button id="btn-week-lock" class="toggle-status-btn unlocked" onclick="toggleWeekLock()">
+                            🔓 Tuần đang mở
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="form-group" style="background-color: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 20px;">
+                    <label>Ghi chú cho tuần hiện tại (Tự động lưu):</label>
+                    <textarea id="week-note" class="form-control" style="resize: vertical; min-height: 60px;" placeholder="Nhập ghi chú chung cho tuần này..." oninput="saveWeekNote()"></textarea>
+                </div>
+
+                <div class="toolbar">
+                    <div class="add-member-container">
+                        <input type="text" id="new-member-name" placeholder="Tên học sinh mới..." class="form-control" style="flex: 2;">
+                        <select id="new-member-group" class="select-control" style="flex: 1;">
+                            <option value="1">Tổ 1</option>
+                            <option value="2">Tổ 2</option>
+                            <option value="3">Tổ 3</option>
+                            <option value="4">Tổ 4</option>
+                        </select>
+                        <button class="btn btn-add" id="btn-add-member" onclick="addMember()">+ Thêm</button>
+                    </div>
+                    
+                    <div class="sort-container">
+                        <label>Sắp xếp theo:</label>
+                        <select id="sort-select" class="select-control" onchange="changeSort(this.value)">
+                            <option value="name">Tên (Việt Nam)</option>
+                            <option value="group">Tổ (1-4)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th width="5%">STT</th>
+                                <th width="20%">Họ và tên</th>
+                                <th width="10%">Tổ</th>
+                                <th width="10%">Điểm</th>
+                                <th width="55%">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="students-tbody">
+                            <!-- Dữ liệu render qua JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section class="card">
+                <h2 class="section-title">
+                    Thống kê điểm trung bình
+                    <span style="font-size: 13px; color: #64748b; font-weight: normal; margin-left: 10px;" id="avg-note-text"></span>
+                </h2>
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th width="10%">STT</th>
+                                <th width="45%">Họ và tên</th>
+                                <th width="45%">Điểm trung bình (Đã chọn lọc)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="average-tbody"></tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+
+        <div id="tab-rules" class="hidden">
+            <section class="card">
+                <h2 class="section-title text-green">I. ĐIỂM THƯỞNG (ĐIỂM CỘNG & QUYỀN LỢI)</h2>
+                <div class="table-responsive">
+                    <table class="data-table table-bonus">
+                        <thead>
+                            <tr>
+                                <th width="5%">TT</th><th width="45%">Tiêu chí thưởng</th><th width="15%">Mức cộng</th><th width="35%">Quyền lợi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>1</td><td>Tham gia văn nghệ, thể thao, hoạt động Đoàn....</td><td>+3 đến +5</td><td>Cộng điểm thi đua cá nhân</td></tr>
+                            <tr><td>2</td><td>Giúp đỡ bạn tiến bộ: học tập, cuộc sống</td><td>+5</td><td>Tuyên dương trước lớp</td></tr>
+                            <tr><td>3</td><td>Hành động đẹp với thầy cô, bạn bè... được tuyên dương</td><td>+5 đến +10</td><td>Tuyên dương + Thưởng cờ thi đua</td></tr>
+                            <tr><td>4</td><td>Bảo vệ tốt CSVC của lớp, trường (sửa bàn ghế, nhắc nhở bạn...)</td><td>+2 đến +5</td><td>Cộng điểm thi đua cá nhân</td></tr>
+                            <tr><td>5</td><td>Tham gia các hoạt động ngoại khóa của lớp</td><td>+2 đến +3</td><td>Cộng điểm thi đua cá nhân</td></tr>
+                            <tr><td>6</td><td>Sáng tạo trong các hoạt động của lớp (đưa ra sáng kiến hay)</td><td>+5</td><td>Tuyên dương + Thưởng phần quà nhỏ</td></tr>
+                            <tr><td>7</td><td>Bảo vệ môi trường (làm vệ sinh ngoài phiên, vị trí được giao)</td><td>+3 đến +5</td><td>Trừ bù 1 lần vi phạm nhẹ</td></tr>
+                            <tr><td>8</td><td>Điểm cao (Điểm 10 kiểm tra)</td><td>+2 / điểm 10</td><td>Cộng trực tiếp vào quỹ điểm</td></tr>
+                            <tr><td>9</td><td>Ba bạn điểm cao nhất trong kỳ thi khảo sát giữa kì, cuối kì</td><td>+5 đến +10</td><td>Khen thưởng danh hiệu Học sinh tiêu biểu + thưởng 50k mỗi bạn vào cuối kì</td></tr>
+                            <tr><td>10</td><td>Ban cán sự lớp, tổ trưởng... hoàn thành tốt nhiệm vụ</td><td>+5 đến +10</td><td>Ưu tiên xếp Hạnh kiểm Tốt cuối kỳ</td></tr>
+                            <tr><td>11</td><td>Nhặt được của rơi trả lại người mất</td><td>+5 đến +10</td><td>Tuyên dương toàn trường/lớp</td></tr>
+                            <tr><td>12</td><td>Có tiến bộ vượt bậc về học tập / ý thức kỷ luật</td><td>+5</td><td>Xóa 1 lần vi phạm nhẹ trong tháng</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section class="card">
+                <h2 class="section-title text-red">II. LỖI VI PHẠM (ĐIỂM TRỪ & HÌNH THỨC PHẠT)</h2>
+                <div class="table-responsive">
+                    <table class="data-table table-penalty">
+                        <thead>
+                            <tr>
+                                <th width="5%">TT</th><th width="45%">Tiêu chí vi phạm</th><th width="15%">Mức trừ</th><th width="35%">Hình thức phạt kèm theo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>1</td><td>Đi học chậm</td><td>-2</td><td>Trực nhật thay bạn 1 ngày</td></tr>
+                            <tr><td>2</td><td>Nghỉ học có phép</td><td>Không trừ</td><td></td></tr>
+                            <tr><td>3</td><td>Nghỉ học không phép</td><td>-3</td><td>Viết bản kiểm điểm + Đổ rác 1 tuần</td></tr>
+                            <tr><td>4</td><td>Bị ghi sổ đầu bài</td><td>-5</td><td>Viết bản kiểm điểm + Trực nhật 1 tuần</td></tr>
+                            <tr><td>5</td><td>Trực nhật chưa tốt bị giám thị, cờ đỏ trừ điểm</td><td>-2 mỗi bạn/cả tổ</td><td>Trực nhật lại 1 tuần</td></tr>
+                            <tr><td>6</td><td>Trực nhật chưa tốt bị nhắc nhở, không trừ điểm</td><td>Không trừ</td><td>Làm lại 1 tuần</td></tr>
+                            <tr><td>7</td><td>Không nghiêm túc trong giờ học (nói chuyện, làm việc riêng...)</td><td>-2</td><td>Trực nhật 1 tuần</td></tr>
+                            <tr><td>8</td><td>Sử dụng điện thoại trong giờ khi giáo viên chưa cho phép</td><td>-5</td><td>Phạt lao động 1 buổi</td></tr>
+                            <tr><td>9</td><td>Sai đồng phục bị giám thị trừ điểm/ chưa trừ</td><td>-2 / -1</td><td>Kê lại bàn ghế lớp cuối giờ</td></tr>
+                            <tr><td>10</td><td>Tô son, đánh phấn đến lớp học</td><td>-2 / lần</td><td>Xóa bảng 1 tuần</td></tr>
+                            <tr><td>11</td><td>Không hoàn thành bài tập về nhà</td><td>-3</td><td>Chép lại bài + Làm bổ sung ngay</td></tr>
+                            <tr><td>12</td><td>Vắng, muộn lao động</td><td>-5</td><td>Lao động bù gấp đôi</td></tr>
+                            <tr><td>13</td><td>Gây gỗ, đánh nhau</td><td>-20</td><td>Mời phụ huynh + Hạ hạnh kiểm + 3 buổi lao động</td></tr>
+                            <tr><td>14</td><td>Mang vật nguy hiểm, trái phép đến trường</td><td>-20</td><td>Tịch thu + Mời phụ huynh + 2 buổi lao động</td></tr>
+                            <tr><td>15</td><td>Không đổ rác, không lau bảng</td><td>-1 mỗi bạn/cả tổ</td><td>Đổ rác & lau bảng + phạt trực nhật 1 tuần</td></tr>
+                            <tr><td>16</td><td>Vi phạm an toàn giao thông</td><td>-15</td><td>Mời phụ huynh + Viết cam kết + 1 buổi lao động</td></tr>
+                            <tr><td>17</td><td>Vi phạm giờ tập trung (muộn)</td><td>-2</td><td>Dọn dẹp sân tập + đổ rác 1 tuần</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+
+        <div id="tab-guide" class="hidden">
+            <section class="card guide-content">
+                <h2 class="section-title">Hướng dẫn & Lưu ý sử dụng</h2>
+                
+                <h3>1. Quản lý tuần</h3>
+                <ul>
+                    <li>Mỗi tuần đều có thể tạo mới bằng nút <b>+ Thêm tuần</b>.</li>
+                    <li>Sử dụng chức năng <b>Khóa tuần (🔓/🔒)</b> để chốt điểm. Khi tuần bị khóa, mọi thao tác sửa điểm, xóa hoặc thêm học sinh sẽ bị vô hiệu hóa để đảm bảo tính minh bạch.</li>
+                    <li>Sử dụng chức năng <b>Khóa tính TB (📊/🚫)</b> nếu tuần đó là tuần nghỉ lễ, tuần thi không xét thi đua... Điểm của tuần đó sẽ không cộng dồn vào Điểm trung bình.</li>
+                    <li>Bạn có thể ghi lại <b>Ghi chú</b> cho từng tuần (VD: "Tuần thi giữa kỳ", "Nhiều bạn đi muộn"). Dữ liệu sẽ tự lưu.</li>
+                </ul>
+
+                <h3>2. Quản lý học sinh</h3>
+                <ul>
+                    <li>Khi thêm mới, bắt buộc nhập Tên và Chọn Tổ tương ứng.</li>
+                    <li>Nút <b>Sửa</b> (biểu tượng bút chì): Dùng để thay đổi Tên hoặc Tổ của học sinh.</li>
+                    <li>Nút <b>Khóa (🔒)</b>: Khóa riêng lẻ 1 học sinh (VD: Chuyển trường, nghỉ học dài hạn). Khi đó không thể cộng/trừ điểm.</li>
+                    <li>Sắp xếp: Tự động nhận diện Tên, Tên đệm và Họ của người Việt Nam để sắp xếp chính xác.</li>
+                </ul>
+            </section>
+        </div>
+    </main>
+
+    <!-- Point Modal -->
+    <div id="point-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-title">Cập nhật điểm</h3>
+                <span class="close-btn" onclick="closeModal('point-modal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Số điểm:</label>
+                    <input type="number" id="point-value" class="form-control" min="1" value="5">
+                </div>
+                <div class="form-group">
+                    <label>Lý do (Bắt buộc):</label>
+                    <select id="point-reason" class="form-control"></select>
+                </div>
+                <div class="form-group">
+                    <label>Ghi chú thêm (Không bắt buộc):</label>
+                    <textarea id="point-note" class="form-control" rows="3" placeholder="Nhập ghi chú..."></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn btn-outline" onclick="closeModal('point-modal')">Hủy</button>
+                    <button class="btn btn-primary" id="btn-submit-point" onclick="submitPoints()">Xác nhận</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Student Modal -->
+    <div id="edit-member-modal" class="modal">
+        <div class="modal-content" style="width: 400px;">
+            <div class="modal-header">
+                <h3>Sửa thông tin học sinh</h3>
+                <span class="close-btn" onclick="closeModal('edit-member-modal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Họ và tên:</label>
+                    <input type="text" id="edit-member-name" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>Tổ:</label>
+                    <select id="edit-member-group" class="form-control">
+                        <option value="1">Tổ 1</option>
+                        <option value="2">Tổ 2</option>
+                        <option value="3">Tổ 3</option>
+                        <option value="4">Tổ 4</option>
+                    </select>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn btn-outline" onclick="closeModal('edit-member-modal')">Hủy</button>
+                    <button class="btn btn-primary" onclick="saveEditMember()">Lưu thay đổi</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- History Modal -->
+    <div id="history-modal" class="modal">
+        <div class="modal-content" style="width: 700px;">
+            <div class="modal-header">
+                <h3 id="history-title">Lịch sử điểm</h3>
+                <span class="close-btn" onclick="closeModal('history-modal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="table-responsive" style="max-height: 350px; overflow-y: auto;">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Thời gian</th>
+                                <th>Người sửa</th>
+                                <th>Thao tác</th>
+                                <th>Lý do</th>
+                                <th>Ghi chú</th>
+                            </tr>
+                        </thead>
+                        <tbody id="history-tbody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alert Modal -->
+    <div id="custom-alert" class="modal" style="z-index: 1050;">
+        <div class="modal-content" style="width: 350px;">
+            <div class="modal-header">
+                <h3>Thông báo</h3>
+                <span class="close-btn" onclick="closeModal('custom-alert')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p id="alert-message" style="margin-bottom: 20px; font-size: 15px;"></p>
+                <div class="modal-actions">
+                    <button class="btn btn-primary" onclick="closeModal('custom-alert')">Đóng</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirm Modal -->
+    <div id="custom-confirm" class="modal" style="z-index: 1050;">
+        <div class="modal-content" style="width: 350px;">
+            <div class="modal-header">
+                <h3>Xác nhận</h3>
+                <span class="close-btn" onclick="closeModal('custom-confirm')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p id="confirm-message" style="margin-bottom: 20px; font-size: 15px;"></p>
+                <div class="modal-actions">
+                    <button class="btn btn-outline" onclick="closeModal('custom-confirm')">Hủy</button>
+                    <button class="btn btn-minus" id="confirm-yes-btn">Đồng ý</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Login Modal -->
+    <div id="login-modal" class="modal">
+        <div class="modal-content" style="width: 350px;">
+            <div class="modal-header">
+                <h3>Đăng nhập hệ thống</h3>
+                <span class="close-btn" onclick="closeModal('login-modal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label>Tên đăng nhập:</label>
+                    <input type="text" id="login-username" class="form-control" placeholder="Nhập tài khoản...">
+                </div>
+                <div class="form-group">
+                    <label>Mật khẩu:</label>
+                    <input type="password" id="login-password" class="form-control" placeholder="Nhập mật khẩu...">
+                </div>
+                <div class="modal-actions">
+                    <button class="btn btn-outline" onclick="closeModal('login-modal')">Hủy</button>
+                    <button class="btn btn-primary" onclick="submitLogin()">Đăng nhập</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="script.js"></script>
+</body>
+</html>
