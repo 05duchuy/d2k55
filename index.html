@@ -30,10 +30,17 @@
 
     <main class="main-content">
         <header class="header">
-            <div>
-                <h1>HỆ THỐNG THI ĐUA - LỚP 10D2</h1>
-                <p class="subtitle">Mỗi học sinh có điểm khởi điểm là 100 điểm/tuần</p>
+            <!-- Bao bọc tiêu đề và nút menu vào chung một flexbox -->
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <!-- Thêm nút toggle -->
+                <button id="sidebar-toggle" class="btn btn-outline" style="font-size: 20px; padding: 5px 12px;" onclick="toggleSidebar()">☰</button>
+                
+                <div>
+                    <h1>HỆ THỐNG THI ĐUA - LỚP 10D2</h1>
+                    <p class="subtitle">Mỗi học sinh có điểm khởi điểm là 100 điểm/tuần</p>
+                </div>
             </div>
+            
             <div class="user-info">
                 <button class="btn btn-primary" id="login-btn" onclick="openLoginModal()">👤 Đăng nhập</button>
             </div>

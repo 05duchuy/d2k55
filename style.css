@@ -39,6 +39,18 @@ body {
     font-size: 13px;
     color: #94a3b8;
 }
+/* Ngăn các đoạn chữ bên trong bị rớt dòng lộn xộn khi sidebar đang chạy hiệu ứng thu nhỏ dần */
+.sidebar {
+    white-space: nowrap; 
+    overflow-x: hidden;
+}
+
+/* Class điều khiển trạng thái thu gọn hoàn toàn trên PC */
+.sidebar.collapsed {
+    width: 0;
+    padding-left: 0;
+    padding-right: 0;
+}
 
 .menu {
     display: flex;
@@ -300,7 +312,7 @@ body {
     body { flex-direction: column; }
     
     /* 1. Biến thanh sidebar thành App Header cố định ở trên cùng */
-    .sidebar { 
+    .sidebar, .sidebar.collapsed { 
         width: 100%; 
         padding: 6px 15px 0 15px; 
         display: grid;
@@ -310,10 +322,16 @@ body {
             "menu menu";
         align-items: center;
         border-bottom: none;
-        position: sticky; /* Ghim cố định khi cuộn */
+        position: sticky; 
         top: 0;
         z-index: 100;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15); /* Thêm bóng đổ tạo chiều sâu */
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15); 
+        
+        overflow-x: visible;
+        white-space: normal;
+    }
+    #sidebar-toggle {
+        display: none !important;
     }
 
     /* 2. Phần Logo nằm góc trái */
@@ -372,6 +390,8 @@ body {
         border-radius: 50%; /* Bo tròn hẳn thành icon app */
         width: 42px;
         height: 42px;
+        margin-top: 12px;      /* Đẩy nút dịch xuống dưới 6px */
+        margin-bottom: -12px;
     }
     .fb-contact-btn span {
         display: none; /* Ẩn chữ trên mobile */

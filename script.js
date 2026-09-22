@@ -463,6 +463,7 @@ function openPointModal(id, action) {
 
 async function submitPoints() {
     if (getCurrentRole() === 'guest') return customAlert("Vui lòng đăng nhập để thao tác!");
+    
     const points = parseInt(document.getElementById("point-value").value);
     const reason = document.getElementById("point-reason").value;
     const note = document.getElementById("point-note").value.trim();
@@ -473,15 +474,29 @@ async function submitPoints() {
     const currentPoints = student.points[state.currentWeek] !== undefined ? student.points[state.currentWeek] : 100;
     const newPoints = state.targetAction === 'add' ? currentPoints + points : currentPoints - points;
 
+    // Trích xuất chuc_vu từ thông tin đăng nhập trong localStorage
+    let editorName = "Hệ thống"; 
+    const userStr = localStorage.getItem('currentUser');
+    if (userStr) {
+        const user = JSON.parse(userStr);
+        editorName = user.chuc_vu || user.username || "Thành viên";
+    }
+
     // Cập nhật hoặc chèn điểm vào weekly_points
     await supabaseClient.from('weekly_points').upsert(
         { student_id: student.id, week_number: state.currentWeek, points: newPoints }, 
         { onConflict: 'student_id, week_number' }
     );
-    // Ghi log lịch sử
+    
+    // Ghi log lịch sử với tên người sửa (chuc_vu)
     await supabaseClient.from('point_history').insert([{
-        student_id: student.id, week_number: state.currentWeek, editor_name: "Tổ trưởng", 
-        action_type: state.targetAction, point_amount: points, reason: reason, note: note
+        student_id: student.id, 
+        week_number: state.currentWeek, 
+        editor_name: editorName, // Đã thay đổi từ "Tổ trưởng" thành biến editorName
+        action_type: state.targetAction, 
+        point_amount: points, 
+        reason: reason, 
+        note: note
     }]);
 
     closeModal("point-modal");
@@ -538,11 +553,16 @@ function applyRBAC() {
         if (controlsActions) controlsActions.style.display = 'none'; // Ẩn khóa tuần & khóa TB
         if (weekNote) weekNote.disabled = true; // Khách và user chỉ được xem ghi chú
     }
-    
+    renderWeekTabs();
     // Refresh bảng để ẩn/hiện các nút Tác vụ
     if (students && students.length > 0) {
         renderTable();
     }
+}
+// Hàm đóng/mở thanh sidebar trên PC
+function toggleSidebar() {
+    const sidebar = document.querySelector('.sidebar');
+    sidebar.classList.toggle('collapsed');
 }
 
 document.addEventListener("DOMContentLoaded", () => {
