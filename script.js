@@ -12,7 +12,8 @@ let state = {
     excludedAverageWeeks: [], 
     targetStudentId: null,
     targetAction: null,
-    sortBy: 'name' 
+    sortBy: 'name',
+    filterGroup: 'all' // Thêm trạng thái bộ lọc Tổ
 };
 
 let students = [];
@@ -197,8 +198,20 @@ function parseVietnameseName(fullName) {
 
 function changeSort(val) { state.sortBy = val; renderTable(); }
 
-function getSortedStudents() {
-    let sorted = [...students];
+function changeFilterGroup(val) { 
+    state.filterGroup = val; 
+    renderTable(); 
+}
+
+function getProcessedStudents(validWeeksForAvg = null) {
+    let processed = [...students];
+
+    // 1. Lọc theo tổ
+    if (state.filterGroup !== 'all') {
+        processed = processed.filter(s => s.group == state.filterGroup);
+    }
+
+    // Hàm so sánh tên tiếng Việt
     const compareNames = (a, b) => {
         const nameA = parseVietnameseName(a.name); const nameB = parseVietnameseName(b.name);
         let cmp = nameA.first.localeCompare(nameB.first, 'vi');
@@ -207,16 +220,41 @@ function getSortedStudents() {
         if (cmp !== 0) return cmp;
         return nameA.last.localeCompare(nameB.last, 'vi');
     };
-    if (state.sortBy === 'name') sorted.sort(compareNames);
-    else if (state.sortBy === 'group') sorted.sort((a, b) => a.group === b.group ? compareNames(a, b) : a.group - b.group);
-    return sorted;
+
+    // 2. Sắp xếp
+    if (state.sortBy === 'name') {
+        processed.sort(compareNames);
+    } else if (state.sortBy === 'points') {
+        if (validWeeksForAvg) {
+            // Sắp xếp theo điểm trung bình (cho bảng thống kê)
+            processed.sort((a, b) => {
+                let totalA = validWeeksForAvg.reduce((sum, week) => sum + (a.points[week] !== undefined ? a.points[week] : 100), 0);
+                let avgA = validWeeksForAvg.length ? totalA / validWeeksForAvg.length : 0;
+                
+                let totalB = validWeeksForAvg.reduce((sum, week) => sum + (b.points[week] !== undefined ? b.points[week] : 100), 0);
+                let avgB = validWeeksForAvg.length ? totalB / validWeeksForAvg.length : 0;
+
+                if (avgB !== avgA) return avgB - avgA;
+                return compareNames(a, b);
+            });
+        } else {
+            // Sắp xếp theo điểm tuần hiện tại (cho bảng chính)
+            processed.sort((a, b) => {
+                let ptA = a.points[state.currentWeek] !== undefined ? a.points[state.currentWeek] : 100;
+                let ptB = b.points[state.currentWeek] !== undefined ? b.points[state.currentWeek] : 100;
+                if (ptB !== ptA) return ptB - ptA;
+                return compareNames(a, b);
+            });
+        }
+    }
+    return processed;
 }
 
 function renderTable() {
     const tbody = document.getElementById("students-tbody"); tbody.innerHTML = ""; 
     const isWeekLocked = state.lockedWeeks.includes(state.currentWeek);
     
-    getSortedStudents().forEach((student, index) => {
+    getProcessedStudents().forEach((student, index) => {
         let currentPoints = student.points[state.currentWeek] !== undefined ? student.points[state.currentWeek] : 100;
         let isStudentLocked = student.locked;
         let badgeClass = currentPoints >= 100 ? "points-high" : "points-normal";
@@ -284,19 +322,52 @@ function renderAverageTable() {
     
     document.getElementById("avg-note-text").innerText = state.excludedAverageWeeks.length > 0 ? `(Đang bỏ qua Tuần: ${state.excludedAverageWeeks.join(", ")})` : `(Gồm tất cả các tuần)`;
     if (validWeeks.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="3" style="text-align: center; color: #64748b; padding: 20px;">Không có tuần nào để tính điểm.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: #64748b; padding: 20px;">Không có tuần nào để tính điểm.</td></tr>`;
         return;
     }
 
-    getSortedStudents().forEach((student, index) => {
-        let totalPoints = validWeeks.reduce((sum, week) => sum + (student.points[week] !== undefined ? student.points[week] : 100), 0);
+    getProcessedStudents(validWeeks).forEach((student, index) => {
+        // Tính tổng quỹ điểm hiện hành
+        let totalPoints = validWeeks.reduce((sum, week) => sum + (student.points[week] !== undefined ? Number(student.points[week]) : 100), 0);
+        
+        // Tính điểm trung bình
         let average = (totalPoints / validWeeks.length).toFixed(1);
         let avgColor = average >= 100 ? "#16a34a" : (average < 80 ? "#dc2626" : "#0284c7");
+        
+        // Tính BIẾN ĐỘNG (Tổng điểm cộng trừ)
+        let totalFluctuation = 0;
+        if (student.history && student.history.length > 0) {
+            student.history.forEach(h => {
+                let isWeekValid = validWeeks.map(String).includes(String(h.week));
+                if (isWeekValid) {
+                    if (h.action === 'add') {
+                        totalFluctuation += Number(h.points) || 0;
+                    } else if (h.action === 'minus') {
+                        totalFluctuation -= Number(h.points) || 0;
+                    }
+                }
+            });
+        }
+
+        // Định dạng hiển thị biến động
+        let flucDisplay = "0";
+        let flucColor = "#64748b"; // Màu xám mặc định nếu = 0
+        if (totalFluctuation > 0) {
+            flucDisplay = `+${totalFluctuation}`;
+            flucColor = "#16a34a"; // Màu xanh cho điểm cộng
+        } else if (totalFluctuation < 0) {
+            flucDisplay = `${totalFluctuation}`; // Dấu trừ đã tự có sẵn trong số âm
+            flucColor = "#dc2626"; // Màu đỏ cho điểm trừ
+        }
+
+        // Đổ dữ liệu ra 5 cột
         tbody.innerHTML += `
             <tr>
                 <td>${index + 1}</td>
                 <td style="font-weight: 500;">${student.name} <span class="group-badge" style="margin-left: 8px;">Tổ ${student.group}</span></td>
+                <td style="font-weight: 600; color: #0f172a;">${totalPoints}</td>
                 <td style="font-weight: 700; color: ${avgColor};">${average}</td>
+                <td style="font-weight: 600; color: ${flucColor};">${flucDisplay}</td>
             </tr>
         `;
     });

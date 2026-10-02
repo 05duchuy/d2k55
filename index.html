@@ -81,10 +81,19 @@
                     </div>
                     
                     <div class="sort-container">
-                        <label>Sắp xếp theo:</label>
+                        <label>Lọc:</label>
+                        <select id="filter-group-select" class="select-control" onchange="changeFilterGroup(this.value)">
+                            <option value="all">Tất cả tổ</option>
+                            <option value="1">Tổ 1</option>
+                            <option value="2">Tổ 2</option>
+                            <option value="3">Tổ 3</option>
+                            <option value="4">Tổ 4</option>
+                        </select>
+
+                        <label style="margin-left: 5px;">Sắp xếp:</label>
                         <select id="sort-select" class="select-control" onchange="changeSort(this.value)">
-                            <option value="name">Tên (Việt Nam)</option>
-                            <option value="group">Tổ (1-4)</option>
+                            <option value="name">Tên (A-Z)</option>
+                            <option value="points">Điểm (Cao-Thấp)</option>
                         </select>
                     </div>
                 </div>
@@ -117,8 +126,10 @@
                         <thead>
                             <tr>
                                 <th width="10%">STT</th>
-                                <th width="45%">Họ và tên</th>
-                                <th width="45%">Điểm trung bình (Đã chọn lọc)</th>
+                                <th width="35%">Họ và tên</th>
+                                <th width="15%">Tổng điểm</th>
+                                <th width="20%">Điểm trung bình</th>
+                                <th width="20%">Biến động (Cộng/Trừ)</th>
                             </tr>
                         </thead>
                         <tbody id="average-tbody"></tbody>
