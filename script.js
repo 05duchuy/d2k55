@@ -334,24 +334,14 @@ function renderAverageTable() {
         let average = (totalPoints / validWeeks.length).toFixed(1);
         let avgColor = average >= 100 ? "#16a34a" : (average < 80 ? "#dc2626" : "#0284c7");
         
-        // Tính BIẾN ĐỘNG (Tổng điểm cộng trừ)
-        let totalFluctuation = 0;
-        if (student.history && student.history.length > 0) {
-            student.history.forEach(h => {
-                let isWeekValid = validWeeks.map(String).includes(String(h.week));
-                if (isWeekValid) {
-                    if (h.action === 'add') {
-                        totalFluctuation += Number(h.points) || 0;
-                    } else if (h.action === 'minus') {
-                        totalFluctuation -= Number(h.points) || 0;
-                    }
-                }
-            });
-        }
+        // TÍNH BIẾN ĐỘNG CHUẨN XÁC: Tổng điểm hiện tại - Tổng điểm gốc (Mỗi tuần 100 điểm)
+        let baseTotal = validWeeks.length * 100;
+        let totalFluctuation = totalPoints - baseTotal;
 
         // Định dạng hiển thị biến động
         let flucDisplay = "0";
         let flucColor = "#64748b"; // Màu xám mặc định nếu = 0
+        
         if (totalFluctuation > 0) {
             flucDisplay = `+${totalFluctuation}`;
             flucColor = "#16a34a"; // Màu xanh cho điểm cộng
